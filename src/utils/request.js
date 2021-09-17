@@ -1,17 +1,18 @@
-function request(url,data,suc = null,err = null) {
-  let httpRequest = new XMLHttpRequest();
-  httpRequest.open('post',window.host + url,true);
-  httpRequest.setRequestHeader("Content-type", "application/json");
-  httpRequest.send(JSON.stringify(data));
+import axios from "axios";
 
-  httpRequest.onreadystatechange = function () {
-    if (httpRequest.readyState === 4 && httpRequest.status === 200) {
-      let json = httpRequest.responseText;//获取到服务端返回的数据
-      console.log("suc",json);
-      suc !== null && suc(json);
-    } else {
-      console.log("err");
-      err !== null && err();
-    }
-  };
+axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
+axios.defaults.baseURL = 'http://127.0.0.1:8080';
+
+export function postJson (url,data,suc = null,err = null) {
+  axios.post(url, data)
+    .then(function (response) {
+      if (response && response.status === 200) {
+        suc && suc(response.data)
+        return
+      }
+      throw response.statusText;
+    })
+    .catch(function (error) {
+      err && err(error)
+    });
 }
