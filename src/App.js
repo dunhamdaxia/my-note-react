@@ -2,6 +2,8 @@ import './App.css';
 import {useEffect, useState} from "react";
 import {postJson} from "./utils/request";
 import Login from "./user/login";
+import {BrowserRouter, Switch, Route} from "react-router-dom";
+import Register from "./user/register";
 
 
 function App() {
@@ -14,12 +16,20 @@ function App() {
     });
   });
   return (
-    <div className="App">
-      {user === null ?
-        <Login/> :
-        <div>个人首页</div>
-      }
-    </div>
+    <BrowserRouter>
+      <Switch>
+        <Route exact path="/">
+          <div>首页</div>
+        </Route>
+        <Route exact path="/login">
+          <Login/>
+        </Route>
+        <Route exact path="/register">
+          <Register/>
+        </Route>
+      </Switch>
+
+    </BrowserRouter>
   );
 }
 
