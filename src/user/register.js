@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
-import {List, InputItem, Toast} from 'antd-mobile';
+import {List, InputItem, Toast, DatePicker} from 'antd-mobile';
 import {postJson} from "../utils/request";
 import {useHistory} from "react-router-dom";
 
 function Register() {
-  const [data,setData] = useState({phone:'',birthday:'',name:'',height:0,weight:0,account:'',password:''});
+  const [data,setData] = useState({phone:'',birthday:'',name:'',height:0,weight:0,account:'',password:'',re_password:''});
   let history = useHistory();
   const registerHandler=()=>{
     if (!data.account) {
@@ -17,11 +17,24 @@ function Register() {
       return
     }
 
-    Toast.loading("login...",0);
-    postJson("/login",{data},(res)=>{
+    if (data.password !== data.re_password) {
+      Toast.fail("两次密码不一致",1)
+      return
+    }
+
+    if (!data.name) {
+      Toast.fail("请输入姓名",1)
+      return
+    }
+
+    data.height = data.height ? parseInt(data.height) : 0;
+    data.weight = data.weight ? parseInt(data.weight) : 0;
+
+    Toast.loading("register...",0);
+    postJson("/register",data,(res)=>{
       if (res.status) {
-        Toast.success("登录成功",1,()=>{
-          console.log("go to main")
+        Toast.success("注册成功",1,()=>{
+          history.push("/login")
         })
       } else {
         Toast.fail(res.msg,1)
@@ -33,13 +46,18 @@ function Register() {
 
   const changeHandler = function(field){
     return (e)=>{
+      if (field === 'birthday') {
+        let time = new Date(Date.parse(e));
+        console.log(time)
+        e = `${time.getFullYear()}-${time.getMonth()}-${time.getDay()}`
+      }
       console.log(field,e)
       setData({...data,[field]:e})
     }
   }
 
   return <div>
-    <List renderHeader={() => '注册开启你的人生日志'}>
+    <List renderHeader='注册开启你的人生日志'>
       <InputItem
         clear
         placeholder="your name"
@@ -55,11 +73,18 @@ function Register() {
       >密码*</InputItem>
       <InputItem
         clear
+        placeholder="password"
+        type="password"
+        value={data.re_password}
+        onChange={changeHandler('re_password')}
+      >确认密码*</InputItem>
+      <InputItem
+        clear
         placeholder="phone"
         type="phone"
         value={data.phone}
         onChange={changeHandler('phone')}
-      >电话*</InputItem>
+      >电话</InputItem>
       <InputItem
         clear
         placeholder="name"
@@ -71,7 +96,23 @@ function Register() {
         placeholder="height"
         value={data.height ? data.height : ''}
         onChange={changeHandler('height')}
-      >身高</InputItem>
+      >身高(cm)</InputItem>
+      <InputItem
+        clear
+        placeholder="weight"
+        value={data.weight ? data.weight : ''}
+        onChange={changeHandler('weight')}
+      >体重(kg)</InputItem>
+      <DatePicker
+        mode="date"
+        title="出生日期"
+        extra="出生日期"
+        value={data.birthday}
+        minDate={new Date(1980, 1, 1, 0, 0, 0)}
+        onChange={changeHandler('birthday')}
+      >
+        <List.Item arrow="horizontal">出生日期</List.Item>
+      </DatePicker>
       <List.Item>
         <div
           className="b_b"

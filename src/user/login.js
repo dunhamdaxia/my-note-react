@@ -20,7 +20,7 @@ function Login() {
     postJson("/login",{data},(res)=>{
       if (res.status) {
         Toast.success("登录成功",1,()=>{
-          console.log("go to main")
+          localStorage.setItem('note-token',res.data.token);
         })
       } else {
         Toast.fail(res.msg,1)
@@ -31,7 +31,7 @@ function Login() {
   }
 
   return <div>
-    <List renderHeader={() => '登录你的人生日志'}>
+    <List renderHeader='登录你的人生日志'>
       <InputItem
         clear
         placeholder="your name"
