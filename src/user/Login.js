@@ -17,10 +17,11 @@ function Login() {
     }
 
     Toast.loading("login...",0);
-    postJson("/login",{data},(res)=>{
+    postJson("/login",data,(res)=>{
       if (res.status) {
         Toast.success("登录成功",1,()=>{
           localStorage.setItem('note-token',res.data.token);
+          history.push('/')
         })
       } else {
         Toast.fail(res.msg,1)

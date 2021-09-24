@@ -2,9 +2,12 @@ import React, { useState } from 'react'
 import {List, InputItem, Toast, DatePicker} from 'antd-mobile';
 import {postJson} from "../utils/request";
 import {useHistory} from "react-router-dom";
+import {formatDate} from "../utils/time";
 
 function Register() {
   const [data,setData] = useState({phone:'',birthday:'',name:'',height:0,weight:0,account:'',password:'',re_password:''});
+
+  const [birthDate,setBirthDate] = useState(new Date());
   let history = useHistory();
   const registerHandler=()=>{
     if (!data.account) {
@@ -46,12 +49,12 @@ function Register() {
 
   const changeHandler = function(field){
     return (e)=>{
-      if (field === 'birthday') {
+      if (field === 'birthday' && e) {
         let time = new Date(Date.parse(e));
-        console.log(time)
-        e = `${time.getFullYear()}-${time.getMonth()}-${time.getDay()}`
+
+        setBirthDate(time)
+        e = formatDate(time);
       }
-      console.log(field,e)
       setData({...data,[field]:e})
     }
   }
@@ -107,7 +110,7 @@ function Register() {
         mode="date"
         title="出生日期"
         extra="出生日期"
-        value={data.birthday}
+        value={birthDate}
         minDate={new Date(1980, 1, 1, 0, 0, 0)}
         onChange={changeHandler('birthday')}
       >

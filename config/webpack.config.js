@@ -365,7 +365,7 @@ module.exports = function (webpackEnv) {
         {
           // "oneOf" will traverse all following loaders until one will
           // match the requirements. When no loader matches it will fall
-          // back to the "file" loader at the end of the loader list.
+          // back to the "file" loader at the end of the loader taskList.
           oneOf: [
             // TODO: Merge this config once `image/avif` is in the mime-db
             // https://github.com/jshttp/mime-db
