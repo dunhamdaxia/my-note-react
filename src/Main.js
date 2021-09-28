@@ -4,6 +4,8 @@ import {useHistory, useRouteMatch,Switch,Route,useParams} from "react-router-dom
 import TaskList from "./task/TaskList";
 import {PlusOutlined} from "@ant-design/icons";
 import TaskCreate from "./task/TaskCreate";
+import Attributes from "./task/Attributes";
+import AttributeCreate from "./task/AttributeCreate";
 
 function Main() {
   let history = useHistory();
@@ -11,11 +13,11 @@ function Main() {
   const [open,setOpen] = useState(false)
   let leftMenuTmp = [
     {title:'任务',path:'task'},
+    {title:'属性',path:'attributes'},
     {title:'个人信息',path:'info'},
   ]
   const [leftMenu,setLeftMenu] = useState(leftMenuTmp)
   const onOpenChange = (...args) => {
-    console.log(args);
     setOpen(!open)
   }
 
@@ -39,7 +41,9 @@ function Main() {
   const rightIcon = function() {
     switch (urlMatch.url) {
       case '/main/task':
-        return [<PlusOutlined key='po' onClick={()=>{history.push('/main/task_create')}}/>]
+        return [<PlusOutlined key='po' onClick={()=>{history.push('/main/task_create')}}/>];
+      case '/main/attributes':
+        return [<PlusOutlined key='po' onClick={()=>{history.push('/main/attribute_create')}}/>];
       default:
         return []
     }
@@ -70,6 +74,10 @@ function Content() {
       return <TaskList/>;
     case 'task_create':
       return <TaskCreate/>;
+    case 'attributes':
+      return <Attributes/>;
+    case 'attribute_create':
+      return <AttributeCreate/>;
     case 'info':
       return <h3>222Requested topic ID: {titleId}</h3>;
     default:
