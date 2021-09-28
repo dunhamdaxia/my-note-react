@@ -1,15 +1,17 @@
 import React, {useState} from "react";
 import { Drawer, List, NavBar, Icon } from 'antd-mobile';
 import {useHistory, useRouteMatch,Switch,Route,useParams} from "react-router-dom";
-import {Link} from "react-router-dom";
-import taskList from "./task/TaskList";
+import TaskList from "./task/TaskList";
+import {PlusOutlined} from "@ant-design/icons";
+import TaskCreate from "./task/TaskCreate";
 
 function Main() {
   let history = useHistory();
+  let urlMatch = useRouteMatch();
   const [open,setOpen] = useState(false)
   let leftMenuTmp = [
     {title:'任务',path:'task'},
-    {title:'个人信息',path:'info'}
+    {title:'个人信息',path:'info'},
   ]
   const [leftMenu,setLeftMenu] = useState(leftMenuTmp)
   const onOpenChange = (...args) => {
@@ -19,6 +21,7 @@ function Main() {
 
   const linkHandler = function (url) {
     return ()=>{
+      setOpen(false)
       history.push(`/main/${url}`)
     }
   }
@@ -33,8 +36,17 @@ function Main() {
     })}
   </List>);
 
+  const rightIcon = function() {
+    switch (urlMatch.url) {
+      case '/main/task':
+        return [<PlusOutlined key='po' onClick={()=>{history.push('/main/task_create')}}/>]
+      default:
+        return []
+    }
+  }
+
   return <div>
-      <NavBar icon={<Icon type="ellipsis"/>} onLeftClick={onOpenChange}>my-note</NavBar>
+      <NavBar icon={<Icon type="ellipsis"/>} onLeftClick={onOpenChange} rightContent={rightIcon()}>my-note</NavBar>
       <div style={{position:'relative'}}>
         <Drawer
           className="my-drawer"
@@ -55,7 +67,9 @@ function Content() {
   let { titleId } = useParams();
   switch (titleId) {
     case 'task':
-      return taskList();
+      return <TaskList/>;
+    case 'task_create':
+      return <TaskCreate/>;
     case 'info':
       return <h3>222Requested topic ID: {titleId}</h3>;
     default:
