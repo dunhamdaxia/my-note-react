@@ -1,6 +1,6 @@
 import './App.css';
 import Login from "./user/Login";
-import {HashRouter, Switch, Route} from "react-router-dom";
+import {HashRouter, Switch, Route, useParams} from "react-router-dom";
 import Register from "./user/Register";
 import Main from "./Main";
 

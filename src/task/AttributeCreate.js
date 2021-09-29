@@ -1,29 +1,62 @@
 import {List, InputItem, Toast, Picker} from 'antd-mobile';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {postJson} from "../utils/request";
 import {useHistory} from "react-router-dom";
+import {useInit, useQuery} from "../components/Common";
 
 function AttributeCreate() {
   const history = useHistory();
-  const [data,setData] = useState({id:0,parent_id:0,name:'',sort:0})
-  const [parentArr,setParentArr] = useState([])
+  const [data,setData] = useState({id:0,parent_id:[0],name:'',sort:0})
+  const [parentArr,setParentArr] = useState([{label:'一级属性',value:0}])
+  const query = useQuery();
   const changeHandler = function(field){
     return (e)=>{
       setData({...data,[field]:e})
     }
   }
 
+  useInit(()=>{
+    if (query.id) {
+      loadInfo()
+    }
+    loadParent();
+  })
+
+  function loadParent(){
+    Toast.loading("loading...")
+    postJson("/attribute/page", {},(res)=>{
+      let arr = [];
+      res.data.map((item)=>{
+        arr.push({value:item.id,label:item.name})
+      })
+      setParentArr(arr)
+      Toast.hide();
+    },(res)=>{
+      Toast.fail(res)
+    })
+  }
+
+  function loadInfo(){
+    Toast.loading("loading...")
+    postJson("/attribute/info",{id:parseInt(query.id)},(res)=>{
+      setData(res.data)
+      Toast.hide()
+    },(res)=>{
+      Toast.fail(res)
+    })
+  }
+
   const saveHandler=()=>{
     if (!data.name) {
-      Toast.fail("任务名不能为空",1)
+      Toast.fail("属性名不能为空",1)
       return
     }
 
-    Toast.loading("creating...",0);
-    postJson("/task/create", {...data,period_type:data.period_type[0]},(res)=>{
+    Toast.loading("saving...",0);
+    postJson("/attribute/save", {...data,parent_id:data.parent_id[0]},(res)=>{
       if (res.status) {
-        Toast.success("创建成功",1,()=>{
-          history.push("/main/task")
+        Toast.success("保存成功",1,()=>{
+          history.push("/main/attributes")
         })
       } else {
         Toast.fail(res.msg,1)
@@ -51,6 +84,7 @@ function AttributeCreate() {
       clear
       placeholder="sort 越大越靠前"
       value={data.sort}
+      defaultValue={data.sort}
       onChange={changeHandler('sort')}
     >排序</InputItem>
     <List.Item>
